@@ -1,0 +1,7 @@
+platform :ios, ‘8.0’
+
+target 'WZZHttpScoopDemo' do
+
+    pod 'CocoaAsyncSocket', '~> 7.4.2'
+end
+
