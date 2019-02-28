@@ -26,6 +26,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) GCDAsyncSocket * socket;
 
 /**
+ 允许地址
+ */
+@property (strong, nonatomic) NSArray * allowHosts;
+
+/**
+ 允许端口
+ */
+@property (strong, nonatomic) NSArray * allowPorts;
+
+/**
  请求
  */
 @property (strong, nonatomic) WZZHttpScoopRequestModel * request;

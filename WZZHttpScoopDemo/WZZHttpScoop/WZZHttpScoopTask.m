@@ -99,7 +99,11 @@ NSTimeInterval WZZHttpScoopTask_TimeOut = 30;
     NSArray * hostPortArr = [hostPort componentsSeparatedByString:@":"];
     NSMutableDictionary * dic = [NSMutableDictionary dictionary];
     dic[@"host"] = hostPortArr.firstObject;
-    dic[@"port"] = hostPortArr.lastObject?hostPortArr.lastObject:@"80";
+    if (hostPortArr.count > 1) {
+        dic[@"port"] = hostPortArr.lastObject?hostPortArr.lastObject:@"80";
+    } else {
+        dic[@"port"] = @"80";
+    }
     return dic;
 }
 
@@ -111,8 +115,21 @@ NSTimeInterval WZZHttpScoopTask_TimeOut = 30;
         WZZHttpScoopTask_Log(@"处理请求");
         WZZHttpScoopTask_Log(@"%@", [self.request toString]);
         
-        //转发请求
-        [self relayRequest];
+        NSDictionary * dic = [self getHostPartWithUrl:self.request.url];
+        if (self.allowHosts.count && dic[@"host"]) {
+            if ([self.allowHosts containsObject:dic[@"host"]]) {
+                //转发请求
+                [self relayRequest];
+            }
+        } else if (self.allowPorts.count && dic[@"port"]) {
+            if ([self.allowHosts containsObject:dic[@"port"]]) {
+                //转发请求
+                [self relayRequest];
+            }
+        } else {
+            //转发请求
+            [self relayRequest];
+        }
     } else if (tag == WZZHttpScoopTask_Tag_ReResponse) {
         //得到转发响应
         WZZHttpScoopResponseModel * resp = [WZZHttpScoopResponseModel modelWithResponseData:data];
@@ -140,7 +157,13 @@ NSTimeInterval WZZHttpScoopTask_TimeOut = 30;
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err {
     if (sock == self.relaySocket) {
-        WZZHttpScoopTask_Log(@"转发socket连接错误:\n%@", err);
+        if (err) {
+            WZZHttpScoopTask_Log(@"转发socket断开连接错误:\n%@", err);
+        }
+    } else if (sock == self.socket) {
+        if (err) {
+            WZZHttpScoopTask_Log(@"socket断开连接错误:\n%@", err);
+        }
     }
 }
 

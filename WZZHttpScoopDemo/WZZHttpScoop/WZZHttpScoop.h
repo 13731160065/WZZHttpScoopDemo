@@ -14,6 +14,16 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WZZHttpScoop : NSObject
 
 /**
+ 允许地址
+ */
+@property (strong, nonatomic) NSArray * allowHosts;
+
+/**
+ 允许端口
+ */
+@property (strong, nonatomic) NSArray * allowPorts;
+
+/**
  抓到请求
  */
 @property (strong, nonatomic) void(^handleRequestOK)(WZZHttpScoopTask * aTask);
